@@ -12,6 +12,7 @@ so calibration is by construction rather than patched on afterward.
 > demo checkpoint are in progress — see [Roadmap](#roadmap).
 
 Project page & write-up: **https://altslate-labs.github.io/certo/**
+Synthetic dataset (HF): **https://huggingface.co/datasets/rajpdus/certo-synthetic-decisions**
 
 Inspired by Jev / "System-1" decision models. Independent project — **not affiliated with TypeSafe**.
 
