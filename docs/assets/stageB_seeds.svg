@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="Stage B seed robustness. KL to the exact answer across three seeds, held-out wording, log scale. soft clusters tightly near 0.005 every seed; sampled ranges 0.72 to 1.09 and argmax ranges 0.61 to 1.11, and which of the two is worse flips seed to seed.">
+  <rect x="0" y="0" width="920" height="560" fill="#F4F6F3"/>
+  <text x="40" y="44" font-size="22" font-weight="700" fill="#1E2A2E">Stage B — soft is robust; single-label is not</text>
+  <text x="40" y="68" font-size="14" fill="#59666B">KL(r||p) across 3 seeds · held-out wording · log scale · each dot is one seed</text>
+
+  <g font-size="12" fill="#59666B">
+    <line x1="120" y1="470" x2="860" y2="470" stroke="#D6DCD8"/><text x="112" y="474" text-anchor="end">0.001</text>
+    <line x1="120" y1="347" x2="860" y2="347" stroke="#EAEEEB"/><text x="112" y="351" text-anchor="end">0.01</text>
+    <line x1="120" y1="225" x2="860" y2="225" stroke="#EAEEEB"/><text x="112" y="229" text-anchor="end">0.1</text>
+    <line x1="120" y1="102" x2="860" y2="102" stroke="#EAEEEB"/><text x="112" y="106" text-anchor="end">1</text>
+  </g>
+  <text x="34" y="290" font-size="12" fill="#59666B" transform="rotate(-90 34 290)" text-anchor="middle">KL to exact answer</text>
+
+  <line x1="120" y1="338" x2="860" y2="338" stroke="#0E7C86" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="126" y="332" font-size="11.5" fill="#0E7C86" text-anchor="start">symbolic ceiling 0.012</text>
+  <line x1="120" y1="129" x2="860" y2="129" stroke="#B5651D" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="126" y="123" font-size="11.5" fill="#B5651D" text-anchor="start">ignore-evidence prior 0.605</text>
+
+  <!-- soft dots (teal): 400,383,379 -->
+  <g fill="#0E7C86">
+    <circle cx="235" cy="400" r="8"/><circle cx="255" cy="383" r="8"/><circle cx="275" cy="379" r="8"/>
+  </g>
+  <text x="255" y="500" font-size="14" fill="#1E2A2E" text-anchor="middle">soft</text>
+  <text x="255" y="440" font-size="11.5" fill="#0E7C86" text-anchor="middle">~0.005 every seed</text>
+
+  <!-- sampled dots (slate): 119,118,98 -->
+  <g fill="#7A8791">
+    <circle cx="455" cy="119" r="8"/><circle cx="475" cy="118" r="8"/><circle cx="495" cy="98" r="8"/>
+  </g>
+  <text x="475" y="500" font-size="14" fill="#1E2A2E" text-anchor="middle">sampled</text>
+
+  <!-- argmax dots (slate): 128,97,110 -->
+  <g fill="#7A8791">
+    <circle cx="675" cy="128" r="8"/><circle cx="695" cy="97" r="8"/><circle cx="715" cy="110" r="8"/>
+  </g>
+  <text x="695" y="500" font-size="14" fill="#1E2A2E" text-anchor="middle">argmax</text>
+
+  <text x="585" y="165" font-size="12.5" fill="#59666B" text-anchor="middle">single-label: 0.6–1.1, and which is worse flips seed to seed</text>
+  <text x="40" y="544" font-size="12" fill="#59666B">Robust claim: soft ≫ {sampled, argmax}. The sampled-vs-argmax ordering is seed noise — not a reliable ranking.</text>
+</svg>

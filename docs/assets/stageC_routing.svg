@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 580" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="Stage C step 1 multi-label expert routing. Left panel: probability fidelity MAE to true per-expert success — soft 0.017, sampled 0.137, argmax 0.290 (argmax worst). Right panel: routing regret vs the oracle expert — soft 0.0014, sampled 0.083, argmax 0.054 (sampled worst). soft is best at both; argmax has the worst probabilities but routes better than sampled.">
+  <rect x="0" y="0" width="920" height="580" fill="#F4F6F3"/>
+  <text x="40" y="44" font-size="22" font-weight="700" fill="#1E2A2E">Stage C (step 1) — multi-label expert routing</text>
+  <text x="40" y="68" font-size="14" fill="#59666B">6 experts, exact per-expert success known · ModernBERT + per-expert sigmoid head · held-out wording · lower = better</text>
+
+  <!-- ===================== Panel A: fidelity (MAE) ===================== -->
+  <text x="70" y="104" font-size="14" font-weight="700" fill="#1E2A2E">Probability fidelity — MAE to true success</text>
+  <g font-size="11.5" fill="#59666B">
+    <line x1="90" y1="440" x2="450" y2="440" stroke="#D6DCD8"/><text x="82" y="444" text-anchor="end">0</text>
+    <line x1="90" y1="334" x2="450" y2="334" stroke="#EAEEEB"/><text x="82" y="338" text-anchor="end">0.1</text>
+    <line x1="90" y1="227" x2="450" y2="227" stroke="#EAEEEB"/><text x="82" y="231" text-anchor="end">0.2</text>
+    <line x1="90" y1="121" x2="450" y2="121" stroke="#EAEEEB"/><text x="82" y="125" text-anchor="end">0.3</text>
+  </g>
+  <rect x="110" y="422" width="72" height="18" rx="4" fill="#0E7C86"/><text x="146" y="414" font-size="13" font-weight="700" fill="#0E7C86" text-anchor="middle">0.017</text>
+  <rect x="215" y="294" width="72" height="146" rx="4" fill="#7A8791"/><text x="251" y="286" font-size="13" font-weight="700" fill="#59666B" text-anchor="middle">0.137</text>
+  <rect x="320" y="131" width="72" height="309" rx="4" fill="#7A8791"/><text x="356" y="123" font-size="13" font-weight="700" fill="#59666B" text-anchor="middle">0.290</text>
+  <g font-size="13" fill="#1E2A2E" text-anchor="middle"><text x="146" y="460">soft</text><text x="251" y="460">sampled</text><text x="356" y="460">argmax</text></g>
+  <text x="356" y="180" font-size="11.5" fill="#B5651D" text-anchor="middle">worst probabilities</text>
+
+  <!-- ===================== Panel B: routing regret ===================== -->
+  <text x="520" y="104" font-size="14" font-weight="700" fill="#1E2A2E">Routing regret — vs the oracle expert</text>
+  <g font-size="11.5" fill="#59666B">
+    <line x1="540" y1="440" x2="890" y2="440" stroke="#D6DCD8"/><text x="532" y="444" text-anchor="end">0</text>
+    <line x1="540" y1="330" x2="890" y2="330" stroke="#EAEEEB"/><text x="532" y="334" text-anchor="end">0.03</text>
+    <line x1="540" y1="220" x2="890" y2="220" stroke="#EAEEEB"/><text x="532" y="224" text-anchor="end">0.06</text>
+    <line x1="540" y1="110" x2="890" y2="110" stroke="#EAEEEB"/><text x="532" y="114" text-anchor="end">0.09</text>
+  </g>
+  <rect x="560" y="435" width="72" height="5" rx="2.5" fill="#0E7C86"/><text x="596" y="427" font-size="13" font-weight="700" fill="#0E7C86" text-anchor="middle">0.0014</text>
+  <rect x="665" y="136" width="72" height="304" rx="4" fill="#7A8791"/><text x="701" y="128" font-size="13" font-weight="700" fill="#59666B" text-anchor="middle">0.083</text>
+  <rect x="770" y="242" width="72" height="198" rx="4" fill="#7A8791"/><text x="806" y="234" font-size="13" font-weight="700" fill="#59666B" text-anchor="middle">0.054</text>
+  <g font-size="13" fill="#1E2A2E" text-anchor="middle"><text x="596" y="460">soft</text><text x="701" y="460">sampled</text><text x="806" y="460">argmax</text></g>
+  <text x="701" y="176" font-size="11.5" fill="#B5651D" text-anchor="middle">worst routing</text>
+
+  <!-- insight -->
+  <text x="40" y="512" font-size="13" font-weight="700" fill="#1E2A2E">Calibration ≠ decision quality.</text>
+  <text x="40" y="534" font-size="12.5" fill="#59666B">argmax has the worst probabilities yet routes better than sampled (thresholding preserves the expert ranking).</text>
+  <text x="40" y="554" font-size="12.5" fill="#59666B">soft wins both — and cost-aware routing (trade success vs. cost, or abstain) needs the calibration only soft provides.</text>
+</svg>

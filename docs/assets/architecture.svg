@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 792" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="JEV model architecture: state text goes into ModernBERT-base producing token embeddings H; eight learned class-queries cross-attend to H to produce one logit per class (z); a question is a partition of the eight classes, the answer logit of each group is the logsumexp of its classes' z, OUT is the logsumexp of the omitted classes, and a softmax over groups gives the answer distribution. z does not depend on the question, giving question-isolation; options enter only at grouping, giving option-invariance.">
+  <defs>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1E2A2E"/></marker>
+  </defs>
+  <rect x="0" y="0" width="940" height="792" fill="#F4F6F3"/>
+  <text x="24" y="38" font-size="22" font-weight="700" fill="#1E2A2E">JEV model — encode once, query per class</text>
+  <text x="24" y="61" font-size="13.5" fill="#59666B">ModernBERT reads the text; 8 class-queries read ModernBERT; a question is just a partition of the classes.</text>
+
+  <!-- input -->
+  <text x="140" y="90" font-size="11" letter-spacing="1" fill="#59666B">STATE TEXT (the only input)</text>
+  <rect x="140" y="98" width="560" height="66" rx="10" fill="#fff" stroke="#AEB8B6"/>
+  <text x="420" y="126" font-size="13" font-style="italic" fill="#1E2A2E" text-anchor="middle">“Base rates: amber 23%, cobalt 1%, … indigo 23%.</text>
+  <text x="420" y="147" font-size="13" font-style="italic" fill="#1E2A2E" text-anchor="middle">Observed texture: frost. The density reading was brine.”</text>
+  <line x1="420" y1="164" x2="420" y2="192" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- ModernBERT -->
+  <rect x="140" y="194" width="560" height="70" rx="10" fill="#fff" stroke="#AEB8B6"/>
+  <text x="420" y="228" font-size="15" font-weight="700" fill="#1E2A2E" text-anchor="middle">ModernBERT-base encoder</text>
+  <text x="420" y="249" font-size="12" fill="#59666B" text-anchor="middle">fine-tuned</text>
+  <line x1="420" y1="264" x2="420" y2="292" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- H tokens -->
+  <text x="140" y="308" font-size="12" fill="#59666B">token embeddings  H  (n × 768)</text>
+  <g fill="#EAF1F0" stroke="#9FB7B4">
+    <rect x="156" y="314" width="60" height="28" rx="5"/><rect x="222" y="314" width="60" height="28" rx="5"/>
+    <rect x="288" y="314" width="60" height="28" rx="5"/><rect x="354" y="314" width="60" height="28" rx="5"/>
+    <rect x="420" y="314" width="60" height="28" rx="5"/><rect x="486" y="314" width="60" height="28" rx="5"/>
+    <rect x="552" y="314" width="60" height="28" rx="5"/><rect x="618" y="314" width="60" height="28" rx="5"/>
+  </g>
+  <line x1="420" y1="342" x2="420" y2="370" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- cross-attention -->
+  <rect x="140" y="372" width="560" height="74" rx="10" fill="#fff" stroke="#AEB8B6"/>
+  <text x="420" y="401" font-size="15" font-weight="700" fill="#1E2A2E" text-anchor="middle">Cross-attention reader</text>
+  <text x="420" y="423" font-size="12" fill="#59666B" text-anchor="middle">8 learned class-queries · each attends to all of H → one vector per class</text>
+  <line x1="420" y1="446" x2="420" y2="474" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- z cells -->
+  <text x="140" y="490" font-size="12" fill="#59666B">z ∈ ℝ⁸  — one logit per class (fixed universe)</text>
+  <g font-size="13" font-weight="700" text-anchor="middle">
+    <rect x="156" y="498" width="54" height="34" rx="6" fill="#fff" stroke="#AEB8B6"/><text x="183" y="520" fill="#1E2A2E">a</text>
+    <rect x="222" y="498" width="54" height="34" rx="6" fill="#fff" stroke="#AEB8B6"/><text x="249" y="520" fill="#1E2A2E">c</text>
+    <rect x="288" y="498" width="54" height="34" rx="6" fill="#fff" stroke="#AEB8B6"/><text x="315" y="520" fill="#1E2A2E">c</text>
+    <rect x="354" y="498" width="54" height="34" rx="6" fill="#fff" stroke="#AEB8B6"/><text x="381" y="520" fill="#1E2A2E">e</text>
+    <rect x="420" y="498" width="54" height="34" rx="6" fill="#fff" stroke="#AEB8B6"/><text x="447" y="520" fill="#1E2A2E">i</text>
+    <rect x="486" y="498" width="54" height="34" rx="6" fill="#fff" stroke="#AEB8B6"/><text x="513" y="520" fill="#1E2A2E">o</text>
+    <rect x="552" y="498" width="54" height="34" rx="6" fill="#fff" stroke="#AEB8B6"/><text x="579" y="520" fill="#1E2A2E">t</text>
+    <rect x="618" y="498" width="54" height="34" rx="6" fill="#fff" stroke="#AEB8B6"/><text x="645" y="520" fill="#1E2A2E">v</text>
+  </g>
+  <line x1="420" y1="532" x2="420" y2="560" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- grouping -->
+  <rect x="140" y="562" width="560" height="92" rx="10" fill="#D9ECEA" stroke="#0E7C86"/>
+  <text x="420" y="588" font-size="14.5" font-weight="700" fill="#0E7C86" text-anchor="middle">question = a partition of the 8 classes</text>
+  <text x="420" y="612" font-size="12.5" fill="#1E2A2E" text-anchor="middle">answer-logit(group) = logsumexp over its classes' z</text>
+  <text x="420" y="633" font-size="12.5" fill="#1E2A2E" text-anchor="middle">OUT = logsumexp(omitted classes)  →  softmax over groups</text>
+  <line x1="420" y1="654" x2="420" y2="682" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- output bars -->
+  <text x="140" y="700" font-size="12" fill="#59666B">answer distribution — example: choice {amber, teal, OUT}</text>
+  <g font-size="12" fill="#1E2A2E">
+    <text x="140" y="722" >amber</text><rect x="196" y="710" width="330" height="16" rx="3" fill="#0E7C86"/><text x="536" y="722">0.66</text>
+    <text x="140" y="746" >teal</text><rect x="196" y="734" width="45" height="16" rx="3" fill="#7FB4AF"/><text x="251" y="746">0.09</text>
+    <text x="140" y="770" >OUT</text><rect x="196" y="758" width="125" height="16" rx="3" fill="#9FB7B4"/><text x="331" y="770">0.25</text>
+  </g>
+
+  <!-- side note A: isolation -->
+  <rect x="712" y="490" width="4" height="44" fill="#0E7C86"/>
+  <text x="726" y="504" font-size="12" font-weight="700" fill="#0E7C86">z ignores the question</text>
+  <text x="726" y="521" font-size="11.5" fill="#59666B">→ question-isolation</text>
+  <text x="726" y="536" font-size="11.5" fill="#59666B">(structural, not learned)</text>
+
+  <!-- side note B: invariance -->
+  <rect x="712" y="574" width="4" height="66" fill="#0E7C86"/>
+  <text x="726" y="588" font-size="12" font-weight="700" fill="#0E7C86">options enter only here</text>
+  <text x="726" y="605" font-size="11.5" fill="#59666B">→ odds(a:b) = exp(zₐ − z_b),</text>
+  <text x="726" y="621" font-size="11.5" fill="#59666B">independent of which other</text>
+  <text x="726" y="637" font-size="11.5" fill="#59666B">options are offered</text>
+</svg>

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.log
+*.done
+.DS_Store
+# model weights are hosted on the HF Hub, not committed
+*.pt
+*.safetensors
+checkpoints/
+runs/

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 700" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="JEV Stage B training recipe: a synthetic world produces both an observable state and the exact posterior r; the state is rendered to English, read by ModernBERT, and turned into predicted probabilities p; the exact posterior r is used both to build the training target and to grade the prediction, and is never shown to the model.">
+  <defs>
+    <marker id="ah" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1E2A2E"/></marker>
+    <marker id="aht" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#0E7C86"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1080" height="700" fill="#F4F6F3"/>
+  <text x="24" y="38" font-size="22" font-weight="700" fill="#1E2A2E">JEV — Stage B training recipe</text>
+  <text x="24" y="61" font-size="13.5" fill="#59666B">Known-answer synthetic data → English → ModernBERT → calibrated probabilities. The answer key trains it and grades it.</text>
+
+  <!-- top lane: what the model experiences -->
+  <text x="24" y="92" font-size="11" letter-spacing="1.2" fill="#59666B">OBSERVABLE PIPELINE</text>
+  <g>
+    <rect x="24" y="102" width="232" height="94" rx="10" fill="#fff" stroke="#AEB8B6"/>
+    <text x="140" y="134" font-size="14.5" font-weight="700" fill="#1E2A2E" text-anchor="middle">Synthetic world</text>
+    <text x="140" y="154" font-size="12" fill="#59666B" text-anchor="middle">naive-Bayes · K=8 · F=12</text>
+    <text x="140" y="174" font-size="12" fill="#59666B" text-anchor="middle">prior + revealed clues</text>
+
+    <rect x="288" y="102" width="232" height="94" rx="10" fill="#fff" stroke="#AEB8B6"/>
+    <text x="404" y="134" font-size="14.5" font-weight="700" fill="#1E2A2E" text-anchor="middle">Text realizer</text>
+    <text x="404" y="154" font-size="12" fill="#59666B" text-anchor="middle">4 templates: 3 train / 1 held-out</text>
+    <text x="404" y="174" font-size="12" fill="#59666B" text-anchor="middle">no answer leaked</text>
+
+    <rect x="552" y="102" width="232" height="94" rx="10" fill="#fff" stroke="#AEB8B6"/>
+    <text x="668" y="134" font-size="14.5" font-weight="700" fill="#1E2A2E" text-anchor="middle">ModernBERT-base</text>
+    <text x="668" y="154" font-size="12" fill="#59666B" text-anchor="middle">+ 8 class-query reader</text>
+    <text x="668" y="174" font-size="12" fill="#59666B" text-anchor="middle">(fine-tuned)</text>
+
+    <rect x="816" y="102" width="240" height="94" rx="10" fill="#fff" stroke="#AEB8B6"/>
+    <text x="936" y="140" font-size="14.5" font-weight="700" fill="#1E2A2E" text-anchor="middle">Predicted probs  p</text>
+    <text x="936" y="162" font-size="12" fill="#59666B" text-anchor="middle">over the 8 classes</text>
+  </g>
+  <!-- top-lane arrows -->
+  <line x1="256" y1="149" x2="286" y2="149" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+  <line x1="520" y1="149" x2="550" y2="149" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+  <line x1="784" y1="149" x2="814" y2="149" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+  <text x="271" y="140" font-size="10.5" fill="#59666B" text-anchor="middle">state</text>
+  <text x="535" y="140" font-size="10.5" fill="#59666B" text-anchor="middle">English</text>
+  <text x="799" y="140" font-size="10.5" fill="#59666B" text-anchor="middle">softmax</text>
+
+  <!-- center: answer key r and prediction p -->
+  <rect x="440" y="236" width="200" height="44" rx="22" fill="#D9ECEA" stroke="#0E7C86"/>
+  <text x="540" y="263" font-size="13.5" font-weight="700" fill="#0E7C86" text-anchor="middle">exact posterior  r</text>
+  <text x="655" y="252" font-size="11" fill="#0E7C86">the answer key</text>
+  <text x="655" y="268" font-size="11" fill="#59666B">(never shown to model)</text>
+
+  <rect x="440" y="300" width="200" height="40" rx="20" fill="#fff" stroke="#AEB8B6"/>
+  <text x="540" y="325" font-size="13" fill="#1E2A2E" text-anchor="middle">prediction  p</text>
+
+  <!-- world -> r (teal) -->
+  <path d="M140,196 L140,258 L438,258" fill="none" stroke="#0E7C86" stroke-width="1.8" marker-end="url(#aht)"/>
+  <text x="150" y="250" font-size="11" fill="#0E7C86">closed-form Bayes</text>
+  <!-- p from D down to p pill -->
+  <path d="M936,196 L936,320 L642,320" fill="none" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- panels -->
+  <rect x="24" y="392" width="484" height="272" rx="12" fill="#ECEFEC" stroke="#AEB8B6"/>
+  <rect x="572" y="392" width="484" height="272" rx="12" fill="#ECEFEC" stroke="#AEB8B6"/>
+  <text x="44" y="424" font-size="15" font-weight="700" fill="#1E2A2E">TRAIN</text>
+  <text x="592" y="424" font-size="15" font-weight="700" fill="#1E2A2E">EVAL — unseen states &amp; held-out wording</text>
+
+  <!-- feeds into panels -->
+  <path d="M470,280 L300,390" fill="none" stroke="#0E7C86" stroke-width="1.8" marker-end="url(#aht)"/>
+  <path d="M470,336 L360,390" fill="none" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+  <path d="M610,280 L820,390" fill="none" stroke="#0E7C86" stroke-width="1.8" marker-end="url(#aht)"/>
+  <path d="M610,336 L760,390" fill="none" stroke="#1E2A2E" stroke-width="1.6" marker-end="url(#ah)"/>
+
+  <!-- TRAIN contents -->
+  <text x="44" y="456" font-size="12.5" fill="#59666B">target built from r · three arms:</text>
+  <rect x="44" y="466" width="150" height="34" rx="8" fill="#D9ECEA" stroke="#0E7C86"/>
+  <text x="119" y="488" font-size="12.5" font-weight="700" fill="#0E7C86" text-anchor="middle">soft = full r</text>
+  <rect x="204" y="466" width="130" height="34" rx="8" fill="#fff" stroke="#AEB8B6"/>
+  <text x="269" y="488" font-size="12" fill="#1E2A2E" text-anchor="middle">sampled y∼r</text>
+  <rect x="344" y="466" width="128" height="34" rx="8" fill="#fff" stroke="#AEB8B6"/>
+  <text x="408" y="488" font-size="12" fill="#1E2A2E" text-anchor="middle">argmax top-1</text>
+  <text x="44" y="536" font-size="13" fill="#1E2A2E">loss = cross-entropy( target , p )</text>
+  <text x="44" y="560" font-size="12" fill="#59666B">AdamW · warmup+decay · grad-clip · bs 32</text>
+  <text x="44" y="596" font-size="12" fill="#59666B">— then update the model weights ↑</text>
+
+  <!-- update arrow back to model -->
+  <path d="M110,392 L110,214 L668,214 L668,198" fill="none" stroke="#1E2A2E" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+  <text x="300" y="208" font-size="11" fill="#59666B">update weights (fine-tune)</text>
+
+  <!-- EVAL contents -->
+  <text x="592" y="470" font-size="24" font-weight="700" fill="#0E7C86">KL / TV to r</text>
+  <text x="592" y="494" font-size="12.5" fill="#59666B">posterior fidelity — did the probabilities match the true answer?</text>
+  <text x="592" y="530" font-size="12.5" fill="#1E2A2E">also: Brier · ECE · accuracy</text>
+  <text x="592" y="566" font-size="12.5" fill="#1E2A2E">bar to beat:  KL &lt; 0.605  (ignore-evidence prior)</text>
+  <text x="592" y="592" font-size="12.5" fill="#1E2A2E">goal:  KL → 0.012  (symbolic-model ceiling)</text>
+  <text x="592" y="628" font-size="12" fill="#59666B">graded on wording the model never saw in training</text>
+
+  <!-- legend -->
+  <line x1="24" y1="684" x2="52" y2="684" stroke="#0E7C86" stroke-width="2.2" marker-end="url(#aht)"/>
+  <text x="60" y="688" font-size="11.5" fill="#59666B">teal = the exact answer key r (used to train and to grade; the model only ever reads the English text)</text>
+</svg>
