@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 520" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="certo turns a decision (a state plus options in text) into calibrated typed probabilities using a small local non-generative model, trained on synthetic data with a known answer key so calibration is by construction. Workflow: define your decision, generate data, train, run locally.">
+  <rect x="0" y="0" width="1040" height="520" fill="#FBFCFB"/>
+  <text x="40" y="52" font-size="34" font-weight="700" fill="#1D2A2E">certo</text>
+  <text x="40" y="80" font-size="16" fill="#5B6A6E">Small models that know how sure they are — calibrated decision models, built from synthetic data.</text>
+
+  <defs><marker id="ar" markerWidth="10" markerHeight="10" refX="7.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1D2A2E"/></marker></defs>
+
+  <!-- Panel A: your decision -->
+  <rect x="40" y="112" width="280" height="196" rx="14" fill="#FFFFFF" stroke="#E5EAE8"/>
+  <text x="60" y="138" font-size="12" letter-spacing="1.2" fill="#0E7C86" font-weight="600">YOUR DECISION</text>
+  <text x="60" y="166" font-size="13" fill="#5B6A6E">state</text>
+  <text x="60" y="188" font-size="14" font-style="italic" fill="#1D2A2E">“charged twice —</text>
+  <text x="60" y="208" font-size="14" font-style="italic" fill="#1D2A2E">refund please”</text>
+  <text x="60" y="238" font-size="13" fill="#5B6A6E">options</text>
+  <g font-size="12.5" fill="#1D2A2E">
+    <rect x="60" y="248" width="72" height="26" rx="13" fill="#F0F4F3" stroke="#E5EAE8"/><text x="96" y="265" text-anchor="middle">billing</text>
+    <rect x="140" y="248" width="60" height="26" rx="13" fill="#F0F4F3" stroke="#E5EAE8"/><text x="170" y="265" text-anchor="middle">tech</text>
+    <rect x="208" y="248" width="84" height="26" rx="13" fill="#F0F4F3" stroke="#E5EAE8"/><text x="250" y="265" text-anchor="middle">refunds</text>
+  </g>
+
+  <line x1="320" y1="210" x2="370" y2="210" stroke="#1D2A2E" stroke-width="1.8" marker-end="url(#ar)"/>
+
+  <!-- Panel B: certo model -->
+  <rect x="372" y="112" width="280" height="196" rx="14" fill="#FFFFFF" stroke="#0E7C86"/>
+  <text x="392" y="138" font-size="12" letter-spacing="1.2" fill="#0E7C86" font-weight="600">certo MODEL</text>
+  <text x="392" y="170" font-size="15" font-weight="600" fill="#1D2A2E">small · local · non-generative</text>
+  <text x="392" y="198" font-size="13.5" fill="#5B6A6E">reads the state and each option,</text>
+  <text x="392" y="217" font-size="13.5" fill="#5B6A6E">scores every option independently,</text>
+  <text x="392" y="236" font-size="13.5" fill="#5B6A6E">returns typed probabilities —</text>
+  <text x="392" y="255" font-size="13.5" fill="#5B6A6E">no text generation.</text>
+  <text x="392" y="285" font-size="12.5" fill="#0E7C86">choice · yes/no · score · multi-label</text>
+
+  <line x1="652" y1="210" x2="702" y2="210" stroke="#1D2A2E" stroke-width="1.8" marker-end="url(#ar)"/>
+
+  <!-- Panel C: calibrated answer -->
+  <rect x="704" y="112" width="296" height="196" rx="14" fill="#FFFFFF" stroke="#E5EAE8"/>
+  <text x="724" y="138" font-size="12" letter-spacing="1.2" fill="#0E7C86" font-weight="600">CALIBRATED ANSWER</text>
+  <g font-size="13" fill="#1D2A2E">
+    <text x="724" y="170">billing</text><rect x="792" y="159" width="160" height="14" rx="3" fill="#0E7C86"/><text x="960" y="170">.86</text>
+    <text x="724" y="196">tech</text><rect x="792" y="185" width="17" height="14" rx="3" fill="#7A8791"/><text x="960" y="196">.09</text>
+    <text x="724" y="222">other</text><rect x="792" y="211" width="9" height="14" rx="3" fill="#7A8791"/><text x="960" y="222">.05</text>
+  </g>
+  <text x="724" y="258" font-size="12.5" fill="#5B6A6E">confidence you can trust —</text>
+  <text x="724" y="277" font-size="12.5" fill="#5B6A6E">abstain when unsure, route by cost.</text>
+
+  <!-- banner: the key idea -->
+  <rect x="40" y="336" width="960" height="52" rx="12" fill="#DDEEEC" stroke="#0E7C86"/>
+  <text x="520" y="368" font-size="15" fill="#0B6068" text-anchor="middle" font-weight="600">Trained on synthetic data with a known answer key → calibration is by construction, not patched on afterward.</text>
+
+  <!-- workflow -->
+  <g font-size="13.5" fill="#1D2A2E" text-anchor="middle">
+    <text x="40" y="440" font-size="12" letter-spacing="1.2" fill="#5B6A6E" text-anchor="start">HOW YOU USE IT</text>
+    <rect x="40" y="454" width="210" height="40" rx="10" fill="#FFFFFF" stroke="#E5EAE8"/><text x="145" y="479">1 · define your decision</text>
+    <rect x="292" y="454" width="200" height="40" rx="10" fill="#FFFFFF" stroke="#E5EAE8"/><text x="392" y="479">2 · generate data</text>
+    <rect x="534" y="454" width="150" height="40" rx="10" fill="#FFFFFF" stroke="#E5EAE8"/><text x="609" y="479">3 · train</text>
+    <rect x="726" y="454" width="274" height="40" rx="10" fill="#FFFFFF" stroke="#E5EAE8"/><text x="863" y="479">4 · run locally</text>
+  </g>
+  <g stroke="#1D2A2E" stroke-width="1.5">
+    <line x1="252" y1="474" x2="290" y2="474" marker-end="url(#ar)"/>
+    <line x1="494" y1="474" x2="532" y2="474" marker-end="url(#ar)"/>
+    <line x1="686" y1="474" x2="724" y2="474" marker-end="url(#ar)"/>
+  </g>
+</svg>
