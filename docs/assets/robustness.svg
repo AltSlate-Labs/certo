@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="Stage B seed robustness. KL to the exact answer across three seeds, held-out wording, log scale. soft clusters tightly near 0.005 every seed; sampled ranges 0.72 to 1.09 and argmax ranges 0.61 to 1.11, and which of the two is worse flips seed to seed.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="Seed robustness. KL to the exact answer across three seeds, held-out wording, log scale. soft clusters tightly near 0.005 every seed; sampled ranges 0.72 to 1.09 and argmax ranges 0.61 to 1.11, and which of the two is worse flips seed to seed.">
   <rect x="0" y="0" width="920" height="560" fill="#F4F6F3"/>
-  <text x="40" y="44" font-size="22" font-weight="700" fill="#1E2A2E">Stage B — soft is robust; single-label is not</text>
+  <text x="40" y="44" font-size="22" font-weight="700" fill="#1E2A2E">Soft is robust; single-label is not</text>
   <text x="40" y="68" font-size="14" fill="#59666B">KL(r||p) across 3 seeds · held-out wording · log scale · each dot is one seed</text>
 
   <g font-size="12" fill="#59666B">

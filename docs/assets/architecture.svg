@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 792" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="JEV model architecture: state text goes into ModernBERT-base producing token embeddings H; eight learned class-queries cross-attend to H to produce one logit per class (z); a question is a partition of the eight classes, the answer logit of each group is the logsumexp of its classes' z, OUT is the logsumexp of the omitted classes, and a softmax over groups gives the answer distribution. z does not depend on the question, giving question-isolation; options enter only at grouping, giving option-invariance.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 792" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="certo model architecture: state text goes into ModernBERT-base producing token embeddings H; eight learned class-queries cross-attend to H to produce one logit per class (z); a question is a partition of the eight classes, the answer logit of each group is the logsumexp of its classes' z, OUT is the logsumexp of the omitted classes, and a softmax over groups gives the answer distribution. z does not depend on the question, giving question-isolation; options enter only at grouping, giving option-invariance.">
   <defs>
     <marker id="ah" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#1E2A2E"/></marker>
   </defs>
   <rect x="0" y="0" width="940" height="792" fill="#F4F6F3"/>
-  <text x="24" y="38" font-size="22" font-weight="700" fill="#1E2A2E">JEV model — encode once, query per class</text>
+  <text x="24" y="38" font-size="22" font-weight="700" fill="#1E2A2E">certo — encode once, query per class</text>
   <text x="24" y="61" font-size="13.5" fill="#59666B">ModernBERT reads the text; 8 class-queries read ModernBERT; a question is just a partition of the classes.</text>
 
   <!-- input -->

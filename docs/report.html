@@ -1,0 +1,276 @@
+<title>certo — technical report</title>
+<meta name="description" content="How certo builds calibrated decision models: the method, the experiments, what we found, and the honest limits.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    color-scheme:light;
+    --bg:#FBFCFB; --surface:#FFFFFF; --ink:#1D2A2E; --muted:#5B6A6E; --line:#E5EAE8;
+    --accent:#0E7C86; --accent-ink:#0B6068; --clay:#B5651D;
+    --sans:"IBM Plex Sans",ui-sans-serif,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;
+    --disp:"Fraunces",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65}
+  .wrap{max-width:760px;margin:0 auto;padding-inline:20px}
+  a{color:var(--accent-ink)} a:hover{text-decoration:underline}
+  h1,h2,h3{font-family:var(--disp);font-weight:600;line-height:1.15;text-wrap:balance}
+  h1{font-size:clamp(34px,7vw,52px);margin:0}
+  h2{font-size:clamp(23px,4.5vw,30px);margin:0 0 4px}
+  h3{font-size:18px;margin:0 0 4px}
+  code,pre{font-family:var(--mono)}
+  .eyebrow{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent-ink);font-weight:600}
+  .muted{color:var(--muted)}
+  header.top{padding-block:64px 26px}
+  header.top .sub{font-size:19px;color:var(--muted);margin-top:14px;max-width:60ch}
+  .byline{color:var(--muted);font-size:14px;margin-top:18px}
+  nav.toc{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:16px 20px;margin:8px 0 8px}
+  nav.toc b{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+  nav.toc ol{margin:8px 0 0;padding-left:20px} nav.toc li{margin:3px 0}
+  section{padding-block:30px;border-top:1px solid var(--line)}
+  section>p,section>ul,section>ol{max-width:66ch}
+  .lead{font-weight:600;font-size:18px;color:var(--ink)}
+  figure{margin:24px 0}
+  figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+  figcaption{color:var(--muted);font-size:13.5px;margin-top:10px}
+  figcaption b{color:var(--accent-ink);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:10px;padding:14px 18px;margin:18px 0}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;margin:16px 0}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)} th{color:var(--muted);font-weight:600}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  .glossary dt{font-weight:600;margin-top:12px} .glossary dd{margin:2px 0 0;color:var(--muted)}
+  pre{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-size:13px}
+  footer{border-top:1px solid var(--line);padding-block:28px 64px;color:var(--muted);font-size:13.5px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">technical report</div>
+    <h1>Teaching small models to say how sure they are</h1>
+    <p class="sub">How <strong>certo</strong> builds decision models whose confidence you can trust —
+      the method, the experiments, what we found, and where it breaks.</p>
+    <p class="byline">AltSlate Labs · 2026 · <a href="index.html">← project page</a> ·
+      <a href="https://github.com/AltSlate-Labs/certo">code</a></p>
+  </header>
+
+  <nav class="toc"><b>Contents</b>
+    <ol>
+      <li><a href="#tldr">The short version</a></li>
+      <li><a href="#why">Why the confidence is the hard part</a></li>
+      <li><a href="#fix">The catch, and our fix</a></li>
+      <li><a href="#recipe">How the model learns</a></li>
+      <li><a href="#findings">What we found</a></li>
+      <li><a href="#arch">How the model is built</a></li>
+      <li><a href="#terms">Terms in plain words</a></li>
+      <li><a href="#limits">Honest limits</a></li>
+      <li><a href="#next">Where it's going</a></li>
+      <li><a href="#repro">Reproduce</a></li>
+    </ol>
+  </nav>
+
+  <section id="tldr">
+    <h2>The short version</h2>
+    <p class="lead">A decision model is only useful if its confidence is trustworthy. How you
+      <em>train</em> it decides whether that's true.</p>
+    <p>We build small models that read a situation and some options and return a probability for each —
+      "route to billing, 0.86" — without generating any text. Training them on the full probability
+      distribution (not just the single "right" answer) makes the confidence honest <em>by
+      construction</em>. We prove this in worlds we generate ourselves, where the exact answer is known,
+      so we can grade the probabilities against the truth — something you can never do on real data.
+      A pretrained language model trained this way recovers the exact answer from plain English, keeps
+      its calibration on wording it never saw, and even handles options it was never trained on.</p>
+  </section>
+
+  <section id="why">
+    <h2>Why the confidence is the hard part</h2>
+    <p class="lead">Picking the answer is easy. Reporting <em>how sure you are</em>, correctly, is not.</p>
+    <p>Think of a weather forecaster. Saying "it will rain" is a decision. Saying "70% chance" is a
+      <em>calibrated</em> statement only if, across all the days she says 70%, it actually rains about
+      70&nbsp;of&nbsp;100 times. That property — the number matching reality — is what lets you act on
+      it: carry an umbrella above 60%, cancel the picnic above 90%.</p>
+    <p>A decision model earns its keep the same way. If it says "route to billing, 0.86" and the 0.86 is
+      trustworthy, you can build real rules: escalate to a human when it's under 0.8, or trade quality
+      against cost when several routes are plausible. If the number is inflated, it's worse than
+      useless — it looks confident and it's wrong.</p>
+    <div class="callout">The trap: train a model on hard labels (just the correct answer) and it still
+      <em>picks</em> well, but it becomes <strong>overconfident</strong> — it says 0.99 when it should
+      say 0.7. You then spend effort patching the confidence after the fact.</div>
+  </section>
+
+  <section id="fix">
+    <h2>The catch, and our fix</h2>
+    <p class="lead">You can't measure whether confidence is honest on real data — because you never
+      know the true odds. So we build worlds where we do.</p>
+    <p>To check the forecaster, you need many days and the actual weather. To check a model's "70%" on a
+      single case, you'd need to know the <em>true</em> probability of that case — which real data never
+      gives you. Our fix: generate the data from a small probabilistic world whose exact answer is
+      computable. We write the exam <em>and</em> the answer key. Now we can grade not just whether the
+      model picked right, but how close its whole probability distribution is to the truth.</p>
+    <p>Concretely, each example has some base rates and a few observed clues; from those, the exact
+      probability of each answer follows by Bayes' rule. We then describe the situation in plain English
+      and ask the model to recover those probabilities — and we score it against the exact answer.</p>
+  </section>
+
+  <section id="recipe">
+    <h2>How the model learns</h2>
+    <p class="lead">Generate a case with a known answer → describe it in English → have the model read it
+      and output calibrated probabilities → train against the true distribution → grade against the
+      exact answer.</p>
+    <figure>
+      <img src="assets/pipeline.png" alt="The world produces both the observable state and the exact answer; the state is rendered to English, read by the model, and turned into predicted probabilities; the exact answer trains and grades the model.">
+      <figcaption><b>What to notice:</b> the exact answer (teal) is used to <em>train</em> the model and
+        to <em>grade</em> it — but the model itself only ever reads the English text; it never sees the
+        answer key.</figcaption>
+    </figure>
+    <p>The one training choice that matters is the <em>target</em>. Three ways to set it:</p>
+    <ul>
+      <li><strong>Soft</strong> — train against the full probability distribution (e.g. 0.66 / 0.09 / 0.25).</li>
+      <li><strong>Sampled</strong> — draw one label from that distribution each time (a fair coin weighted by it).</li>
+      <li><strong>Winner-only</strong> — always train on the single most likely answer.</li>
+    </ul>
+    <p>Soft targets are a "proper scoring rule": the loss is smallest exactly when the model's
+      probabilities equal the truth. That's the calibration-by-construction lever.</p>
+  </section>
+
+  <section id="findings">
+    <h2>What we found</h2>
+
+    <h3>1 · Training on the full distribution recovers the exact answer from English</h3>
+    <p>A pretrained language model (ModernBERT) trained on soft targets recovers the exact probabilities
+      from prose to within a whisker — and it does so on <em>wording it never saw in training</em>, which
+      means it learned to reason about the situation, not memorize phrasings. Training on a single label
+      (winner-only or sampled) fails badly — landing near "ignore the evidence and guess the base rate."</p>
+    <figure>
+      <img src="assets/fidelity.png" alt="Distance to the exact answer by training target, log scale: soft ~0.004, single-label targets 0.6 to 0.7, near the ignore-evidence baseline of 0.605.">
+      <figcaption><b>What to notice:</b> soft sits far below the "ignore the evidence" line; both
+        single-label targets sit at it. Lower is better; the scale is logarithmic.</figcaption>
+    </figure>
+
+    <h3>2 · The result is robust; the single-label failures are not a fluke</h3>
+    <p>Across repeated runs, soft is consistently near-perfect and the single-label targets consistently
+      fail. (Which single-label target is <em>worse</em> flips run to run — they're both just bad, so we
+      don't rank them.)</p>
+    <figure>
+      <img src="assets/robustness.png" alt="Distance to the exact answer across three seeds: soft clusters near 0.005 every time; single-label targets scatter between 0.6 and 1.1.">
+      <figcaption><b>What to notice:</b> soft's points are a tight low cluster; the single-label points
+        scatter high. The robust claim is "soft beats single-label," not a precise ordering of the two
+        failures.</figcaption>
+    </figure>
+
+    <h3>3 · Hardening to the winner wrecks the probabilities while the accuracy barely moves</h3>
+    <p>This is the headline. With a small reference model that can represent the answer exactly, training
+      on winner-only labels gives <strong>almost the same accuracy</strong> as soft — but its probability
+      error is roughly a thousand times larger. The decision looks fine; the confidence is a lie. (On
+      bigger models, winner-only training also starts to hurt accuracy, not just confidence.)</p>
+
+    <h3>4 · The model learns clues that only matter in combination</h3>
+    <p>We built a harder world where clues carry no information alone — only their <em>combination</em>
+      identifies the answer (like a lock that needs two dials together). A model that adds up clues one
+      at a time provably can't solve it; the model that reads them jointly does, recovering the exact
+      answer where the additive rule is stuck near "ignore the evidence."</p>
+
+    <h3>5 · It generalizes to options it was never trained on</h3>
+    <p>For a <em>general</em> decision model, the options can't be fixed in advance — they arrive at
+      request time, described in words. We trained the model to score options from their descriptions,
+      and tested it on options, names, wording, <em>and counts</em> it had never seen. It generalizes:
+      it learned the rule ("match the evidence to each option's description"), not a fixed list of
+      classes. Calibration is somewhat looser here than in the fixed-option setting — reading arbitrary
+      descriptions is a harder job — but it holds.</p>
+
+    <h3>6 · For real decisions, calibration is what makes cost-aware choice work</h3>
+    <p>We tried a routing task: several experts, each with an independent chance of succeeding; pick the
+      best. Here calibration and decision quality come apart cleanly.</p>
+    <figure>
+      <img src="assets/routing.png" alt="Two panels: probability error (winner-only worst) and routing regret (sampled worst); soft is best on both.">
+      <figcaption><b>What to notice:</b> winner-only training has the <em>worst probabilities</em> yet
+        routes better than sampled (thresholding preserves the ranking) — but only soft, with honest
+        probabilities, supports <em>cost-aware</em> routing (trade success against cost, or abstain when
+        unsure). Soft wins both panels.</figcaption>
+    </figure>
+
+    <h3>7 · A caveat we tested: rescaling helps, but doesn't fully fix it</h3>
+    <p>The standard patch for overconfidence is "temperature scaling" — divide the scores by a constant
+      fit afterward. It removes most of the winner-only model's overconfidence, but the repaired
+      probabilities are still far worse than a model trained soft from the start. Overconfidence is
+      partly a uniform sharpness (fixable) and partly per-case error (not fixable by one knob). Better to
+      train it right than to patch it.</p>
+  </section>
+
+  <section id="arch">
+    <h2>How the model is built</h2>
+    <p class="lead">Read the situation once; score each option from its own description; combine
+      independently.</p>
+    <figure>
+      <img src="assets/architecture.png" alt="The state text is read by the encoder; per-class or per-option queries read the encoder to produce a score each; a question is a grouping of those scores turned into probabilities.">
+      <figcaption><b>What to notice:</b> because each option is scored on its own, reordering the options
+        or adding new ones doesn't change the others' scores — a structural guarantee, not something the
+        model has to learn. (This same independence is a limitation for "best of this set" comparisons —
+        see limits.)</figcaption>
+    </figure>
+    <p>The model is a small pretrained text encoder plus a lightweight scoring head. It's
+      <em>non-generative</em>: it produces typed probabilities in one pass, not text you have to parse.
+      It supports four output shapes — a single choice (with a "none of these" option), yes/no, an
+      ordered score, and independent yes/no across several options (for routing).</p>
+  </section>
+
+  <section id="terms">
+    <h2>Terms in plain words</h2>
+    <dl class="glossary">
+      <dt>Calibration</dt><dd>Whether the stated confidence matches reality: of all the "70%" calls, about 70% come true.</dd>
+      <dt>Posterior / true distribution</dt><dd>The actual probability of each answer given the clues — our "answer key."</dd>
+      <dt>Posterior fidelity (KL / TV)</dt><dd>How far the model's probabilities are from the true ones. Zero is perfect; smaller is better.</dd>
+      <dt>Soft vs hard targets</dt><dd>Soft = train on the whole probability distribution; hard = train on a single label.</dd>
+      <dt>Runtime option</dt><dd>A choice supplied at request time, described in words — not fixed when the model was trained.</dd>
+      <dt>Abstain / escalate</dt><dd>Choosing not to decide (hand off to a human) when confidence is low — only safe if confidence is calibrated.</dd>
+    </dl>
+  </section>
+
+  <section id="limits">
+    <h2>Honest limits</h2>
+    <ul>
+      <li><strong>These results are from worlds we generate.</strong> They prove the method and let us
+        measure calibration exactly; they are not a claim about any particular real-world task yet.</li>
+      <li><strong>A small model is calibrated, not omniscient.</strong> Decisions needing world knowledge
+        (science questions, commonsense) are capped by the encoder's size — good calibration doesn't add
+        knowledge.</li>
+      <li><strong>Generalizing to new wording and new options is not the same as new <em>rules</em>.</strong>
+        Handling unfamiliar phrasing is easier than handling unfamiliar decision criteria; the harder
+        test (whole new rule families) is future work.</li>
+      <li><strong>Independent option scoring is a feature and a limit.</strong> It guarantees stable
+        probabilities, but it's too rigid for "which of these is best" comparisons where options should
+        influence each other.</li>
+      <li><strong>Without a teacher, real data gives one label per case</strong> — the setting where a
+        capable model tends to become overconfident. Getting calibrated targets on real domains means
+        either simulating them (our strength) or collecting several labels per case.</li>
+    </ul>
+  </section>
+
+  <section id="next">
+    <h2>Where it's going</h2>
+    <p>The next version aims at a more <em>general</em> decision model: a corpus that mixes rules we
+      generate ourselves (the real breadth engine), our known-answer worlds, and a careful selection of
+      public decision datasets — with strict provenance, licensing, and leakage controls, and evaluation
+      that holds out entire rule families, not just wording. A larger backbone is on the table for the
+      knowledge-heavy tasks. The small model stays the default; bigger is an option, not a requirement.</p>
+    <p class="muted">Related work: the runtime-option classifier family (GLiClass, GLiNER, and open
+      decision-model rebuilds) established the <em>mechanism</em> of scoring options in one pass; certo's
+      contribution is calibration by construction on top of it.</p>
+  </section>
+
+  <section id="repro">
+    <h2>Reproduce</h2>
+    <pre>python datagen.py selftest             # verify the synthetic world (exact answers)
+python train.py compare                # target types, graded on distance to the exact answer
+python train_text.py run  --arm soft   # recover the answer from English
+python train_generic.py run --arm soft # generic runtime-option model</pre>
+    <p>Code: <a href="https://github.com/AltSlate-Labs/certo">github.com/AltSlate-Labs/certo</a> ·
+       Dataset: <a href="https://huggingface.co/datasets/rajpdus/certo-synthetic-decisions">certo-synthetic-decisions</a></p>
+  </section>
+
+  <footer>
+    <p>certo — a research toolkit for calibrated decision models. Results are measured in controlled,
+      known-answer worlds; real-world validation is ongoing. Inspired by Jev / System-1 decision models;
+      independent, not affiliated with TypeSafe. MIT License.</p>
+  </footer>
+</div>

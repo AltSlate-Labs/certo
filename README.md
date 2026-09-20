@@ -20,7 +20,8 @@ calibration is by construction rather than patched on afterward.
 > packaged `pip install certo` interface (inference API, checkpoint save/load, tuning helpers) and a
 > demo checkpoint are in progress — see [Roadmap](#roadmap).
 
-Project page & technical report: **https://altslate-labs.github.io/certo/** ·
+Project page: **https://altslate-labs.github.io/certo/** ·
+Technical report: **https://altslate-labs.github.io/certo/report.html** ·
 Synthetic dataset: **https://huggingface.co/datasets/rajpdus/certo-synthetic-decisions**
 
 Inspired by Jev / "System-1" decision models. Independent project — **not affiliated with TypeSafe**.
@@ -56,7 +57,7 @@ Measured against the exact answer on **held-out wording**; lower KL is better.
 ![posterior fidelity](docs/assets/fidelity.png)
 ![routing](docs/assets/routing.png)
 
-The full method, experiments, and honest limitations are in the **[technical report](https://altslate-labs.github.io/certo/)**.
+The full method, experiments, and honest limitations are in the **[technical report](https://altslate-labs.github.io/certo/report.html)**.
 
 ## Reproduce
 

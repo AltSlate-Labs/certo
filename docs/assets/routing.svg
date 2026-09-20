@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 580" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="Stage C step 1 multi-label expert routing. Left panel: probability fidelity MAE to true per-expert success — soft 0.017, sampled 0.137, argmax 0.290 (argmax worst). Right panel: routing regret vs the oracle expert — soft 0.0014, sampled 0.083, argmax 0.054 (sampled worst). soft is best at both; argmax has the worst probabilities but routes better than sampled.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 580" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-label="Multi-label expert routing. Left panel: probability fidelity MAE to true per-expert success — soft 0.017, sampled 0.137, argmax 0.290 (argmax worst). Right panel: routing regret vs the oracle expert — soft 0.0014, sampled 0.083, argmax 0.054 (sampled worst). soft is best at both; argmax has the worst probabilities but routes better than sampled.">
   <rect x="0" y="0" width="920" height="580" fill="#F4F6F3"/>
-  <text x="40" y="44" font-size="22" font-weight="700" fill="#1E2A2E">Stage C (step 1) — multi-label expert routing</text>
+  <text x="40" y="44" font-size="22" font-weight="700" fill="#1E2A2E">Multi-label expert routing</text>
   <text x="40" y="68" font-size="14" fill="#59666B">6 experts, exact per-expert success known · ModernBERT + per-expert sigmoid head · held-out wording · lower = better</text>
 
   <!-- ===================== Panel A: fidelity (MAE) ===================== -->
