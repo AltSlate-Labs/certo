@@ -6,6 +6,7 @@
 ![built with](https://img.shields.io/badge/built%20with-PyTorch%20%C2%B7%20ModernBERT-1D2A2E)
 [![project page](https://img.shields.io/badge/project%20page-altslate--labs.github.io%2Fcerto-0E7C86)](https://altslate-labs.github.io/certo/)
 [![dataset](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-certo--synthetic--decisions-FFBF00)](https://huggingface.co/datasets/rajpdus/certo-synthetic-decisions)
+[![model](https://img.shields.io/badge/%F0%9F%A4%97%20model-certo--decision--model-FF9D00)](https://huggingface.co/altslate/certo-decision-model)
 
 **Small models that know how sure they are.**
 
@@ -59,6 +60,29 @@ Measured against the exact answer on **held-out wording**; lower KL is better.
 
 The full method, experiments, and honest limitations are in the **[technical report](https://altslate-labs.github.io/certo/report.html)**.
 
+## The default model
+
+A ModernBERT-large decision model trained on soft targets —
+[**altslate/certo-decision-model**](https://huggingface.co/altslate/certo-decision-model).
+
+![training](docs/assets/training.png)
+
+Held-out (graded against the exact answer): **KL 0.008 · acc 0.844 · ECE 0.004** on options it never
+saw; option-order invariance exact. It generalizes to unseen options/wording/counts — and it fails
+*safely* (abstains) on free-flowing real prose it wasn't trained on (see the report). Use it locally:
+
+```python
+from huggingface_hub import snapshot_download
+from infer import DecisionModel
+
+m = DecisionModel.load(snapshot_download("altslate/certo-decision-model"))
+r = m.decide(state="We measured salinity as ember, tempo as gale, density as gale.",
+             options=[{"id": "A", "description": "typically salinity ember, tempo gale, density gale"},
+                      {"id": "B", "description": "typically salinity dawn, tempo frost, density brine"}],
+             abstain_below=0.6)
+r["probs"]   # calibrated probability per option
+```
+
 ## Reproduce
 
 Requires `torch`, `transformers`, `numpy` (a CUDA box for the language-model runs; the synthetic
@@ -87,7 +111,7 @@ generate nor label.
 ## Roadmap
 
 - [ ] `pip install certo` — `DecisionSpec` → `generate` → `train`, and `DecisionModel.load().decide()/route()/calibrate()`
-- [ ] checkpoint save/load + a **demo checkpoint** on the HF Hub
+- [x] checkpoint save/load + inference API (`infer.py`) + a model on the HF Hub
 - [ ] real-data validation (accuracy + calibration)
 - [ ] broaden decision structures (extraction, temporal, verification) toward a general base
 - [ ] baseline: apply certo's soft-target recipe to a GLiClass-family backbone and measure the calibration gain

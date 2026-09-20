@@ -61,6 +61,7 @@
       <li><a href="#fix">The catch, and our fix</a></li>
       <li><a href="#recipe">How the model learns</a></li>
       <li><a href="#findings">What we found</a></li>
+      <li><a href="#model">The trained model, in practice</a></li>
       <li><a href="#arch">How the model is built</a></li>
       <li><a href="#terms">Terms in plain words</a></li>
       <li><a href="#limits">Honest limits</a></li>
@@ -195,6 +196,32 @@
       probabilities are still far worse than a model trained soft from the start. Overconfidence is
       partly a uniform sharpness (fixable) and partly per-case error (not fixable by one knob). Better to
       train it right than to patch it.</p>
+  </section>
+
+  <section id="model">
+    <h2>The trained model, in practice</h2>
+    <p class="lead">The default model is a ModernBERT-large decision model, trained on soft targets.
+      It generalizes to options it never saw, and — importantly — it fails <em>safely</em> where it
+      shouldn't be trusted.</p>
+    <figure>
+      <img src="assets/training.png" alt="Training loss dropping from 1.05 to 0.32 over 25 epochs; held-out KL to the exact answer 0.008, accuracy 0.844.">
+      <figcaption><b>What to notice:</b> on options, names, wording, and counts it never trained on,
+        it lands within <b>KL 0.008</b> of the exact answer (accuracy 0.844); option-order invariance
+        is exact. Model: <a href="https://huggingface.co/altslate/certo-decision-model">altslate/certo-decision-model</a>.</figcaption>
+    </figure>
+    <p>Real outputs from the model (predicted probabilities next to the exact answer where we can
+      compute it):</p>
+    <table>
+      <tr><th>case</th><th>predicted</th><th>exact</th><th></th></tr>
+      <tr><td>clear evidence</td><td>Dune 1.00</td><td>Dune 1.00</td><td>confident &amp; correct</td></tr>
+      <tr><td>ambiguous evidence</td><td>Isle 0.49 · Fen 0.48 · Shoal 0.02</td><td>0.49 · 0.49 · 0.02</td><td>calibrated spread → abstains</td></tr>
+      <tr><td>options reversed</td><td colspan="2">identical per-option probabilities</td><td>order-invariant</td></tr>
+      <tr><td>real prose ("charged twice, want a refund")</td><td colspan="2">≈ uniform → abstains</td><td>out of distribution</td></tr>
+    </table>
+    <div class="callout">The last row is the honest boundary: the model was trained on structured,
+      synthetic inputs, so on free-flowing real language it returns a near-uniform distribution and
+      <strong>abstains</strong> rather than guess confidently. Handling real prose is the v2 goal
+      (real data + a paraphrase layer) — this checkpoint is a reference, not a general model.</div>
   </section>
 
   <section id="arch">
