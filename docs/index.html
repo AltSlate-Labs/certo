@@ -4,18 +4,11 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   :root{
-    --bg:#F4F6F3; --surface:#FFFFFF; --ink:#1E2A2E; --muted:#59666B; --line:#DCE3E0;
-    --accent:#0E7C86; --accent-ink:#0B5960; --slate:#7A8791; --clay:#B5651D;
+    color-scheme:light;
+    --bg:#FBFCFB; --surface:#FFFFFF; --ink:#1D2A2E; --muted:#5B6A6E; --line:#E5EAE8;
+    --accent:#0E7C86; --accent-ink:#0B6068; --slate:#7A8791; --clay:#B5651D;
     --sans:"IBM Plex Sans",ui-sans-serif,-apple-system,Segoe UI,Helvetica,Arial,sans-serif;
     --disp:"Fraunces",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  }
-  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-    --bg:#101617; --surface:#161F21; --ink:#E7ECEA; --muted:#9CA9A6; --line:#25302F;
-    --accent:#3BA99F; --accent-ink:#7FD3C9; --slate:#8A97A0; --clay:#D98A45;
-  }}
-  :root[data-theme="dark"]{
-    --bg:#101617; --surface:#161F21; --ink:#E7ECEA; --muted:#9CA9A6; --line:#25302F;
-    --accent:#3BA99F; --accent-ink:#7FD3C9; --slate:#8A97A0; --clay:#D98A45;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
