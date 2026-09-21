@@ -100,7 +100,21 @@ def expert_panel(rng, idx):
                 {"domain": "routing", "rule_family": "multi_condition", "rule_signature": "skill_GE_difficulty"})
 
 
-FAMILIES = [threshold_return, conjunction_approval, rubric_severity, expert_panel]
+# --------------------------------------------------------------------------- noul (single yes/no)
+def qualifies_binary(rng, idx):
+    a = rng.random() < 0.5; b = rng.random() < 0.5; ok = a and b
+    state = f"Condition A is {'met' if a else 'not met'}. Condition B is {'met' if b else 'not met'}."
+    q = {"type": "binary",
+         "instructions": "Does the case qualify? It qualifies only if both A and B are met.",
+         "options": [{"id": "yes", "description": "the case qualifies"},
+                     {"id": "no", "description": "the case does not qualify"}]}
+    return _rec(idx, "supplied_policy_binary", state, q,
+                {"kind": "categorical_label", "label_id": "yes" if ok else "no",
+                 "source_type": "program_verified"},
+                {"domain": "eligibility", "rule_family": "binary_conjunction", "rule_signature": "A_AND_B"})
+
+
+FAMILIES = [threshold_return, conjunction_approval, rubric_severity, expert_panel, qualifies_binary]
 
 
 def generate(n, seed=0):

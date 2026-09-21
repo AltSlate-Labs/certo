@@ -45,7 +45,8 @@ class DecisionModel:
         logit = self.model(se["input_ids"].to(dev), se["attention_mask"].to(dev),
                            oe["input_ids"].unsqueeze(0).to(dev), oe["attention_mask"].unsqueeze(0).to(dev),
                            torch.ones(1, M, dtype=torch.bool, device=dev))
-        p = torch.softmax(logit, 1)[0].cpu().tolist()
+        T = float(self.cfg.get("temperature", 1.0))   # post-hoc calibration; 1.0 = uncalibrated
+        p = torch.softmax(logit / T, 1)[0].cpu().tolist()
         ids = [o.get("id", o.get("name", str(i))) for i, o in enumerate(options)]
         probs = {ids[i]: round(p[i], 4) for i in range(M)}
         res = {"probs": probs, "top": max(probs, key=probs.get)}

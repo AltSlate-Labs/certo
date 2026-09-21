@@ -12,7 +12,7 @@ from collections import Counter
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # jev/ for genworld
 import numpy as np
 from datasets import load_dataset, get_dataset_config_info
-import schema, policies
+import schema, policies, domains
 import genworld as G
 from realize import ATTR_NAMES, VALUE_WORDS
 
@@ -104,6 +104,18 @@ def clinc(cap, rng):
                   {"source_id": "clinc/clinc_oos", "license": "cc-by-3.0", "candidate_policy": "gold+7random"})
 
 
+def boolq(cap, rng):  # noul: a single yes/no read against a passage
+    opts = [{"id": "yes", "description": "the answer is yes"}, {"id": "no", "description": "the answer is no"}]
+    ds = load_dataset("google/boolq", split="train", streaming=True)
+    for i, r in enumerate(itertools.islice(ds, cap or 10**9)):
+        q = {"type": "binary", "options": opts,
+             "instructions": f"Based on the passage, answer yes or no: {r['question'].strip()}?"}
+        yield rec(f"boolq-{i}", f"boolq-{i}", "boolean_qa", r["passage"].strip(), q,
+                  {"kind": "categorical_label", "label_id": "yes" if r["answer"] else "no",
+                   "source_type": "human_annotation"},
+                  {"source_id": "google/boolq", "license": "cc-by-sa-3.0"})
+
+
 def arc(cap, rng):
     for conf in ["ARC-Easy", "ARC-Challenge"]:
         ds = load_dataset("allenai/ai2_arc", conf, split="train", streaming=True)
@@ -122,6 +134,12 @@ def arc(cap, rng):
 
 def synth_policies(cap, rng):
     for r in policies.generate(cap or 100000, seed=7):
+        r["metadata"]["split"] = None
+        yield r
+
+
+def synth_domains(cap, rng):  # JevBench-representative math/finance/ops/safety/coding decisions
+    for r in domains.generate(cap or 500000, seed=11):
         r["metadata"]["split"] = None
         yield r
 
@@ -145,10 +163,11 @@ def synth_posterior(cap, rng):
                   {"source_id": "genworld"})
 
 
-SOURCES = [  # (name, adapter, cap)
-    ("dbpedia", dbpedia, 500000), ("multinli", multinli, 390000), ("goemotions", goemotions, 43000),
-    ("clinc", clinc, 15000), ("arc", arc, None),
-    ("policies", synth_policies, 100000), ("posterior", synth_posterior, 60000),
+SOURCES = [  # (name, adapter, cap) — v2.1: rebalanced to JevBench's topic x question-kind shape
+    ("dbpedia", dbpedia, 100000), ("multinli", multinli, 120000), ("goemotions", goemotions, 43000),
+    ("clinc", clinc, 15000), ("arc", arc, None), ("boolq", boolq, None),
+    ("domains", synth_domains, 500000),
+    ("policies", synth_policies, 120000), ("posterior", synth_posterior, 60000),
 ]
 
 
