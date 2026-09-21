@@ -12,8 +12,10 @@
 
 certo is a toolkit for building **narrow, calibrated decision models** — models that don't
 generate text, they read a *state* and a set of *options* and return **calibrated probabilities**
-(the confidence means what it says). They're trained on synthetic data with a *known answer key*, so
-calibration is by construction rather than patched on afterward.
+(the confidence means what it says). Calibration comes from the training **recipe** — learn the full
+answer distribution, not just the winning label — so it's by construction, not patched on afterward.
+You train on whatever labels you have: a **known-answer synthetic world** (where calibration can be
+*measured* exactly), your **own labeled data**, or a mix.
 
 ![what certo is](docs/assets/hero.png)
 
@@ -38,9 +40,25 @@ usual way) and the model still picks well but turns **overconfident**.
 certo trains against the **full answer distribution** (a proper scoring rule), and because the data
 comes from a world with a **known posterior**, every model is graded against the *exact* answer —
 not just accuracy, but **posterior fidelity** (how close the probabilities are to the truth), which
-you can never measure on real data.
+you can never measure on real data. That known-answer world is our *measurement* environment — on
+real data you train the same way and grade with calibration + accuracy against outcomes.
 
 ![how it works](docs/assets/pipeline.png)
+
+## Synthetic or real data?
+
+Both — the recipe is **provenance-aware**. It trains on **exact posteriors** from a known-answer
+world (soft targets → measurable KL/TV), **real observed / gold labels** (ordinary supervised loss),
+or **teacher estimates** (optional distillation) — each with the right loss, and kept distinct so
+they're never confused (the canonical schema + validator live in [`prepare/`](prepare/)). Synthetic
+known-answer worlds are how we can *measure* calibration exactly and one convenient way to generate
+data — not the only source. The **v2 corpus** mixes rule-based generation with **public decision
+datasets** (NLI, intent, emotion, reasoning) under strict licensing/leakage/split discipline — see
+[`prepare/SPEC.md`](prepare/SPEC.md).
+
+> **Honest note:** the current default **checkpoint** was trained only on synthetic data — a
+> demonstrator. Training on your own data and real-dataset mixes is the toolkit's intended use and
+> the v2 focus.
 
 ## What we found (controlled, known-answer worlds)
 
