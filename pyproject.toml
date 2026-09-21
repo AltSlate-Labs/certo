@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "certo"
+version = "0.1.0"
+description = "Small models that know how sure they are — calibrated, non-generative decision models."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "AltSlate Labs" }]
+keywords = ["calibration", "decision-making", "classification", "modernbert", "certo"]
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "torch>=2.1",
+  "transformers>=4.48",
+  "numpy>=1.24",
+  "huggingface_hub>=0.24",
+]
+
+[project.urls]
+Homepage = "https://altslate-labs.github.io/certo/"
+Repository = "https://github.com/AltSlate-Labs/certo"
+Report = "https://altslate-labs.github.io/certo/report.html"
+
+# Preview: the installable inference surface. Research/training scripts (datagen, train_*, genworld,
+# realize, prepare/) live in the repo but are not part of the wheel.
+[tool.setuptools]
+py-modules = ["certo", "infer", "model_generic"]

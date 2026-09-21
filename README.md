@@ -73,15 +73,24 @@ saw; option-order invariance exact. It generalizes to unseen options/wording/cou
 
 ```python
 from huggingface_hub import snapshot_download
-from infer import DecisionModel
+from certo import DecisionModel
 
 m = DecisionModel.load(snapshot_download("altslate/certo-decision-model"))
-r = m.decide(state="We measured salinity as ember, tempo as gale, density as gale.",
-             options=[{"id": "A", "description": "typically salinity ember, tempo gale, density gale"},
-                      {"id": "B", "description": "typically salinity dawn, tempo frost, density brine"}],
-             abstain_below=0.6)
-r["probs"]   # calibrated probability per option
+
+r = m.decide(
+    state="We measured tempo as gale, texture as dawn, density as ember.",
+    options=[{"id": "Loam", "description": "typically texture dawn, tempo gale, density ember"},
+             {"id": "Dune", "description": "typically texture gale, tempo dawn, density dawn"},
+             {"id": "Moor", "description": "typically texture ember, tempo frost, density frost"}],
+    abstain_below=0.6)
+
+r["probs"]    # {'Loam': 0.99, 'Dune': 0.0, 'Moor': 0.0}   — real output, calibrated
+r["top"]      # 'Loam'
+r["abstain"]  # False   (it abstains when the evidence is ambiguous)
 ```
+
+More real runs — confident matches, calibrated uncertainty, many options, order-invariance, and the
+honest real-language boundary — are in **[`examples/`](examples/)**.
 
 ## Reproduce
 
