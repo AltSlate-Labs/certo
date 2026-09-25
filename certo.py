@@ -15,8 +15,20 @@ Calibrated, non-generative decision models. Quick start:
     r["probs"]    # {'Loam': 0.99, 'Dune': 0.0, 'Moor': 0.0}  — calibrated
     r["top"]      # 'Loam'
     r["abstain"]  # False
+
+Generative reasoner (e.g. Certo-R1) behind the same API:
+
+    from certo import ReasoningDecisionModel
+    m = ReasoningDecisionModel.load("altslate/certo-r1-qwen3-4b", device="cuda")
+    r = m.decide("A parcel weighs 2.4 kg; shipping is $3/kg rounded up; charged $9.",
+                 [{"id": "yes", "description": "the amount charged is correct"},
+                  {"id": "no",  "description": "the amount charged is wrong"}],
+                 instructions="Was the customer charged correctly?")
+    r["top"]        # "yes"
+    r["rationale"]  # brief reasoning ending in FINAL ANSWER
 """
 from infer import DecisionModel  # noqa: F401
+from infer_reasoner import ReasoningDecisionModel  # noqa: F401
 
-__all__ = ["DecisionModel"]
-__version__ = "0.1.0"
+__all__ = ["DecisionModel", "ReasoningDecisionModel"]
+__version__ = "0.2.0"

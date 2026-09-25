@@ -7,6 +7,7 @@
 [![project page](https://img.shields.io/badge/project%20page-altslate--labs.github.io%2Fcerto-0E7C86)](https://altslate-labs.github.io/certo/)
 [![dataset](https://img.shields.io/badge/%F0%9F%A4%97%20dataset-certo--synthetic--decisions-FFBF00)](https://huggingface.co/datasets/rajpdus/certo-synthetic-decisions)
 [![model](https://img.shields.io/badge/%F0%9F%A4%97%20model-certo--decision--model-FF9D00)](https://huggingface.co/altslate/certo-decision-model)
+[![Certo-R1](https://img.shields.io/badge/%F0%9F%A4%97%20model-certo--r1--qwen3--4b-FF6F3C)](https://huggingface.co/altslate/certo-r1-qwen3-4b)
 
 **Small models that know how sure they are.**
 
@@ -110,6 +111,34 @@ r["abstain"]  # False   (it abstains when the evidence is ambiguous)
 More real runs — confident matches, calibrated uncertainty, many options, order-invariance, and the
 honest real-language boundary — are in **[`examples/`](examples/)**.
 
+## Certo-R1 — a generative reasoner for the hard tier
+
+A calibrated encoder is cheap and trustworthy, but on **hard, reasoning-heavy decisions** (multi-step
+arithmetic, timezone math, nested exceptions) a single forward pass hits a wall — those decisions need
+*generation*. So certo now includes **[Certo-R1](https://huggingface.co/altslate/certo-r1-qwen3-4b)**
+(`altslate/certo-r1-qwen3-4b`, Apache-2.0): a Qwen3-4B fine-tuned for **concise, verified reasoning** — it
+reasons in one or two sentences and returns the chosen option. It runs behind the **same API**:
+
+```python
+from certo import ReasoningDecisionModel
+
+m = ReasoningDecisionModel.load("altslate/certo-r1-qwen3-4b", device="cuda")
+r = m.decide(
+    state="A parcel weighs 2.4 kg. Shipping is $3 per kg, any part of a kg rounds up. Charged $9.",
+    options=[{"id": "yes", "description": "the amount charged is correct"},
+             {"id": "no",  "description": "the amount charged is wrong"}],
+    instructions="Was the customer charged correctly?")
+r["top"]        # 'yes'
+r["rationale"]  # 'Round 2.4->3 kg; correct = 3x3 = $9; paid $9 -> correct. FINAL ANSWER: A'
+```
+
+On a held-out set of ten short calc/compositional families, Certo-R1 is **non-inferior to full verbose
+reasoning** at **~15× fewer tokens** and **~8–11× lower latency**. On JevBench 1.4.2 (public 231) it scores
+easy 0.98 / standard 0.90 / hard 0.60 — far above an encoder on the hard tier, trading calibration for
+intelligence (it emits an answer, not a probability). The natural architecture is a **cascade**: the
+calibrated encoder decides the easy majority; low-confidence cases escalate to Certo-R1. (An experimental
+single-model *self-router* that folds both into one backbone is in progress.)
+
 ## Reproduce
 
 Requires `torch`, `transformers`, `numpy` (a CUDA box for the language-model runs; the synthetic
@@ -139,6 +168,7 @@ generate nor label.
 
 - [ ] `pip install certo` — `DecisionSpec` → `generate` → `train`, and `DecisionModel.load().decide()/route()/calibrate()`
 - [x] checkpoint save/load + inference API (`infer.py`) + a model on the HF Hub
+- [x] **Certo-R1** — concise generative reasoner for the hard tier, same API (`infer_reasoner.py`); cascade over the calibrated encoder
 - [ ] real-data validation (accuracy + calibration)
 - [ ] broaden decision structures (extraction, temporal, verification) toward a general base
 - [ ] baseline: apply certo's soft-target recipe to a GLiClass-family backbone and measure the calibration gain

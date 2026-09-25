@@ -36,6 +36,8 @@
   section .sub{color:var(--muted);margin-top:8px;max-width:64ch}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}
   @media (max-width:640px){.grid2{grid-template-columns:1fr}}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:22px}
+  @media (max-width:760px){.grid3{grid-template-columns:1fr}}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
   .card h3{font-size:18px;margin-bottom:6px}
   .card p{margin:0;color:var(--muted);font-size:14.5px}
@@ -193,6 +195,34 @@ r = m.decide(state=<span class="s">"card charged twice, refund please"</span>,
              kind=<span class="s">"choice"</span>)
 r.probs        <span class="c"># {"billing": 0.86, "tech": 0.08, "OUT": 0.06}  — calibrated</span>
 r.abstain      <span class="c"># True when the top probability is below your threshold</span></pre>
+  </section>
+
+  <section>
+    <div class="eyebrow">hard tier</div>
+    <h2>When one forward pass isn’t enough, <em>reason</em> — briefly.</h2>
+    <p class="sub muted">Certo-R1: a Qwen3-4B fine-tuned for concise, verified reasoning — behind the same API.</p>
+    <p class="muted">A calibrated encoder is cheap and trustworthy, but hard, reasoning-heavy decisions
+    (multi-step arithmetic, timezone math, nested exceptions) need <em>generation</em>. Certo-R1 reasons in a
+    sentence or two and returns the chosen option — <strong>non-inferior to full verbose reasoning at ~15×
+    fewer tokens and ~8–11× lower latency</strong>. The natural architecture is a <strong>cascade</strong>:
+    the calibrated encoder decides the easy majority; low-confidence cases escalate to Certo-R1.</p>
+    <pre><span class="k">from</span> certo <span class="k">import</span> ReasoningDecisionModel
+m = ReasoningDecisionModel.load(<span class="s">"altslate/certo-r1-qwen3-4b"</span>, device=<span class="s">"cuda"</span>)
+r = m.decide(
+    state=<span class="s">"A parcel weighs 2.4 kg. Shipping is $3/kg, any part of a kg rounds up. Charged $9."</span>,
+    options=[{<span class="s">"id"</span>:<span class="s">"yes"</span>, <span class="s">"description"</span>:<span class="s">"charged correctly"</span>},
+             {<span class="s">"id"</span>:<span class="s">"no"</span>,  <span class="s">"description"</span>:<span class="s">"charged incorrectly"</span>}],
+    instructions=<span class="s">"Was the customer charged correctly?"</span>)
+r[<span class="s">"top"</span>]        <span class="c"># 'yes'</span>
+r[<span class="s">"rationale"</span>]  <span class="c"># 'Round 2.4->3 kg; correct = 3x3 = $9; paid $9 -> correct. FINAL ANSWER: A'</span></pre>
+    <div class="grid3">
+      <div class="card"><h3>JevBench 1.4.2 (public)</h3><p>easy 0.98 · standard 0.90 · hard 0.60 — reasons far
+      above an encoder on the hard tier (it emits an answer, trading calibration for intelligence).</p></div>
+      <div class="card"><h3>~15× cheaper</h3><p>concise verified reasoning: ≈32 vs ≈489 generated tokens per
+      decision, ~8–11× lower routed latency, at non-inferior accuracy.</p></div>
+      <div class="card"><h3>Same API</h3><p><code>ReasoningDecisionModel.load().decide(state, options)</code> —
+      drop-in with the calibrated encoder; escalate on low confidence.</p></div>
+    </div>
   </section>
 
   <section>
